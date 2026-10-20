@@ -17,8 +17,8 @@ claude            # o hook injeta o estado da campanha automaticamente
 ## Peças
 | Arquivo | Papel |
 |---|---|
-| `CLAUDE.md` | Núcleo do mestre (~600 tok, estável → cache) |
-| `tools/rpg.py` | Motor determinístico: dados, fichas, testes, combate, relógios, oráculo, lore, saves (só stdlib) |
+| `CLAUDE.md` | Núcleo do mestre (~1k tok, estável → cache): loop, honra/facções, estilo épico+cotidiano |
+| `tools/rpg.py` | Motor determinístico: dados, fichas, testes, combate, relógios, **honra**, **facções**, oráculo, lore, saves (só stdlib) |
 | `.claude/settings.json` | Opus 5.5, `effortLevel: low`, compactação em 100k, hook `SessionStart` → `rpg.py boot` |
 | `.claude/skills/*` | `/mestre`, `/ficha`, `/combate`, `/preparar` (effort high), `/salvar` — carregadas só quando usadas |
 | `campanha/` | Estado da campanha (criado por `rpg.py nova`) |
@@ -30,6 +30,7 @@ python3 tools/rpg.py ajuda
 python3 tools/rpg.py x "teste kael furtividade 15 vant; relogio Guarda +1; log Kael entrou no cofre"
 python3 tools/rpg.py x 'combate inicio "Goblinx3:ca13:hp2d6:atk4:dano1d6+2:des2"; ataque kael goblin1'
 python3 tools/rpg.py oraculo improvavel
+python3 tools/rpg.py x 'honra kael +1 "poupou o prisioneiro"; faccao "Guarda Cinzenta" rep-1 "quer a coroa"'
 ```
 Sistema padrão: d20 leve compatível com regras estilo 5e (atributos, perícias, resistências, proficiência por nível). `RPG_DIR` muda a pasta da campanha.
 

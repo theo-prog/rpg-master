@@ -9,7 +9,9 @@
 | **Agência do jogador** | Narra o que o PJ faz/sente | Regra explícita no núcleo; turno sempre termina numa escolha |
 | **Rolar só quando importa** | Rola para tudo, ou nunca | Passo 2 do loop: incerteza **e** consequência |
 | **Falhar para frente** | Falha = beco sem saída | Passo 3: falha avança com complicação |
-| **Mundo vivo** | Mundo congela fora de cena | Relógios de facção/perigo (estilo *Blades in the Dark*) |
+| **Mundo vivo** | Mundo congela fora de cena | Relógios de facção/perigo (estilo *Blades in the Dark*) + `faccao` com reputação -3..+3 e meta própria |
+| **Honra e consequência moral** | Atos sem peso; ética só no discurso | `codigo` na ficha + `honra` (-5..+5) mexida por atos que custam caro; o mundo reage por vantagem/desvantagem e boatos |
+| **Épico com respiro** | Tom monocórdio: tudo é clímax ou tudo é burocracia | Alvos de palavras por escala + regra do respiro cotidiano (~1 a cada 2–3 cenas de tensão) |
 | **NPCs memoráveis** | NPCs genéricos e iguais | Fórmula desejo + tique + voz, guardada em 1 linha de lore |
 | **Ritmo e foco** | Paredes de texto, resumos, menus | Teto de palavras por tipo de turno; sem listas na narração |
 | **Mistérios solucionáveis** | Pista única perdida trava a trama | Regra das 3 pistas; "segredos e pistas" soltos na prep |
@@ -62,9 +64,10 @@ Em vez de deliberação aberta, o núcleo impõe um checklist curto — Intenç�
 | Classe | Exemplo | Ferramenta | Narração |
 |---|---|---|---|
 | T0 Fora do jogo | "quanto de PV eu tenho?" | 0–1 chamada | ≤ 40 palavras, sem narrar |
-| T1 Ação simples / diálogo | conversar, andar, olhar | 0–1 | 60–120 palavras |
-| T2 Ação arriscada / combate | furtar, atacar | 1 chamada em lote | 1–3 frases por ação |
-| T3 Cena-chave | revelação, chegada, clímax | 0–1 | até ~250 palavras |
+| T1 Ação simples / diálogo / respiro | conversar, andar, olhar, refeição | 0–1 | 120–220 palavras |
+| T2 Ação arriscada / combate | furtar, atacar | 1 chamada em lote | 60–120 palavras por ação do PJ; inimigos num parágrafo |
+| T3 Cena-chave | chegada a lugar novo, revelação, travessia | 0–1 | 220–380 palavras |
+| T4 Clímax | duelo decisivo, morte, virada | 0–2 | 350–550 palavras |
 
 ### 3.5 Higiene de ferramentas
 - **Uma chamada por turno**: `rpg.py x "cmd1; cmd2; cmd3"`. Cada chamada extra é mais uma ida ao modelo (com seu próprio raciocínio e saída).
@@ -76,14 +79,14 @@ Em vez de deliberação aberta, o núcleo impõe um checklist curto — Intenç�
 | | Sem arquitetura | Com arquitetura |
 |---|---|---|
 | Raciocínio | 1–3k (contas, deliberação, effort medium) | 100–400 (effort low, loop curto) |
-| Narração | 300–600 | 100–250 |
+| Narração | 300–600 | 200–450 (tetos T1–T3 acima) |
 | Chamadas de ferramenta | 2–4 + releitura de arquivos | 1 em lote |
 | Contexto relido | cresce sem limite | ≤ 100k, zerado por sessão |
-| **Custo aproximado** | **~$0,05–0,10** | **~$0,01–0,02** |
+| **Custo aproximado** | **~$0,05–0,10** | **~$0,02–0,04** |
 
 São estimativas para orientar; meça na sua mesa (`/cost` no Claude Code) e ajuste os tetos de palavras e o `effort`.
 
 ### 3.7 Botões de ajuste
 - Cena épica pedindo mais? `/effort medium` momentaneamente, depois volte para `low`.
-- Narração curta demais? Suba os tetos no núcleo (o maior custo continua sendo saída).
+- Narração curta/longa demais? Ajuste os alvos em "Estilo de narração" no `CLAUDE.md` (o maior custo continua sendo saída). Clímax: `/effort medium` por um turno.
 - Campanha muito grande? Baixe o teto do resumo e confie no `lore ?` para buscas.

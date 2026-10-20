@@ -23,6 +23,22 @@ class TestRPG(unittest.TestCase):
         self.assertIn("Caído", out)
         self.assertIn("Teste", self.run_rpg("boot"))
 
+    def test_honra_e_faccoes(self):
+        self.run_rpg("nova", "H")
+        self.run_rpg("pj", "novo", "Kael", "hp=10", "codigo=Nunca ferir desarmados")
+        out = self.run_rpg("x", 'honra kael +2 "poupou o prisioneiro"; honra kael +9; honra kael -99')
+        self.assertIn("honra +2 (respeitada)", out)
+        self.assertIn("honra +5 (lendária)", out)
+        self.assertIn("honra -5 (desonrada)", out)
+        out = self.run_rpg("x", 'faccao "Guarda Cinzenta" rep+2 "quer a coroa"; faccao "Guarda Cinzenta" rep-9; faccao')
+        self.assertIn("+2 aliada — quer a coroa", out)
+        self.assertIn("-3 inimiga jurada", out)
+        boot = self.run_rpg("boot")
+        self.assertIn("FACÇÕES: Guarda Cinzenta-3", boot)
+        self.assertIn("honra-5", boot)
+        with open(os.path.join(self.dir, "log.md"), encoding="utf-8") as f:
+            self.assertIn("poupou o prisioneiro", f.read())
+
     def test_dados(self):
         for _ in range(50):
             t = int(self.run_rpg("rolar", "4d6kh3").rsplit("=", 1)[1])

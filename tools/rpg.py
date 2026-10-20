@@ -154,6 +154,8 @@ def ficha_curta(p):
     extra = []
     if p.get("cond"):
         extra.append("cond:" + ",".join(p["cond"]))
+    if "honra" in p:
+        extra.append(f"honra{sg(int(p['honra']))}")
     return f"{p['nome']} N{p.get('nivel', 1)} {p.get('raca', '')} {p.get('classe', '')} PV{hp} CA{p.get('ca', '?')} | {at}" + (
         " | " + " ".join(extra) if extra else "")
 
@@ -164,7 +166,7 @@ def cmd_pj(args):
         die("uso: pj novo <nome> k=v... | pj <id> hp-5 po+10 item+Corda cond+Caído")
     if args[0] == "novo":
         nome = args[1]
-        p = {"nome": nome, "nivel": 1, "xp": 0, "po": 0, "itens": [], "cond": [], "pericias": [], "resist": []}
+        p = {"nome": nome, "nivel": 1, "xp": 0, "po": 0, "itens": [], "cond": [], "pericias": [], "resist": [], "honra": 0}
         for kv in args[2:]:
             k, v = kv.split("=", 1)
             p[k if k.upper() not in ATR else k.upper()] = (
@@ -228,6 +230,10 @@ def cmd_ficha(args):
         if p.get(k):
             say(f"{k.capitalize()}:", p[k] if isinstance(p[k], str) else "; ".join(p[k]))
     say(f"Itens: {', '.join(p.get('itens', [])) or '-'} | PO {p.get('po', 0)} | XP {p.get('xp', 0)}")
+    if p.get("codigo"):
+        say("Código:", p["codigo"])
+    if "honra" in p:
+        say(f"Honra {sg(int(p['honra']))} ({honra_nivel(int(p['honra']))})")
     if p.get("notas"):
         say("Notas:", p["notas"])
 
@@ -296,7 +302,7 @@ def cmd_nova(args):
     for d in ("pjs", "mundo"):
         (ROOT / d).mkdir(parents=True, exist_ok=True)
     jsave("estado.json", {"campanha": nome, "sessao": 1, "dia": 1, "hora": "manhã", "local": "",
-                          "cena": "", "fios": [], "relogios": {}, "flags": {}, "combate": None})
+                          "cena": "", "fios": [], "relogios": {}, "faccoes": {}, "flags": {}, "combate": None})
     for f, t in (("resumo.md", f"# {nome}\n"), ("log.md", ""), ("prep.md", "")):
         if not (ROOT / f).exists():
             (ROOT / f).write_text(t, "utf-8")
@@ -397,6 +403,63 @@ def cmd_lore(args):
         return
     f = d / f"{slug(args[0])}.md"
     say(f.read_text("utf-8").strip() if f.exists() else f"'{args[0]}' não existe")
+
+
+# ---------- honra e facções ----------
+HONRA_MIN, HONRA_MAX = -5, 5
+REP_MIN, REP_MAX = -3, 3
+REP_NOMES = {-3: "inimiga jurada", -2: "hostil", -1: "desconfiada", 0: "neutra", 1: "simpática",
+             2: "aliada", 3: "devota"}
+
+
+def honra_nivel(h):
+    return ("lendária" if h >= 4 else "respeitada" if h >= 2 else "comum" if h >= 0
+            else "manchada" if h >= -2 else "desonrada")
+
+
+def cmd_honra(args):
+    """honra <pj> [+N|-N|=N] [motivo...]  — honra/reputação pessoal (-5..+5) ligada ao código do PJ"""
+    if not args:
+        die("uso: honra <pj> +1 \"cumpriu o juramento\"  (sem delta: mostra)")
+    p = pj_load(args[0])
+    if not (ROOT / pj_path(args[0])).exists():
+        die("honra só vale para PJs")
+    h = int(p.get("honra", 0))
+    if len(args) > 1 and re.fullmatch(r"[+\-=]\d+", args[1]):
+        op, n = args[1][0], int(args[1][1:])
+        h = n if op == "=" else h + n if op == "+" else h - n
+        h = max(HONRA_MIN, min(HONRA_MAX, h))
+        p["honra"] = h
+        jsave(pj_path(args[0]), p)
+        if len(args) > 2:
+            cmd_log([f"[honra {p['nome']} {args[1]}]"] + args[2:])
+    say(f"{p['nome']} honra {sg(h)} ({honra_nivel(h)})" + (f" | código: {p['codigo']}" if p.get("codigo") else ""))
+
+
+def cmd_faccao(args):
+    """faccao | faccao "Nome" [rep+1|rep-1|rep=N] ["desejo/meta 1 linha"] | faccao "Nome" x"""
+    e = est()
+    fs = e.setdefault("faccoes", {})
+    if not args:
+        for k, f in fs.items():
+            say(f"{k} {sg(f['rep'])} {REP_NOMES[f['rep']]}" + (f" — {f['meta']}" if f.get("meta") else ""))
+        return say("(sem facções)") if not fs else None
+    nome = args[0]
+    f = fs.setdefault(nome, {"rep": 0, "meta": ""})
+    for x in args[1:]:
+        m = re.fullmatch(r"rep([+\-=])(\d+)", x)
+        if x == "x":
+            fs.pop(nome, None)
+            jsave("estado.json", e)
+            return say(f"{nome} removida")
+        if m:
+            o, n = m.group(1), int(m.group(2))
+            f["rep"] = n if o == "=" else f["rep"] + n if o == "+" else f["rep"] - n
+            f["rep"] = max(REP_MIN, min(REP_MAX, f["rep"]))
+        else:
+            f["meta"] = x
+    jsave("estado.json", e)
+    say(f"{nome} {sg(f['rep'])} {REP_NOMES[f['rep']]}" + (f" — {f['meta']}" if f["meta"] else ""))
 
 
 # ---------- combate ----------
@@ -504,6 +567,8 @@ def cmd_boot(args):
     cmd_ficha([])
     if e["fios"]:
         say("FIOS:", " | ".join(f"{i}.{f}" for i, f in enumerate(e["fios"], 1)))
+    if e.get("faccoes"):
+        say("FACÇÕES:", " | ".join(f"{k}{sg(f['rep'])}({REP_NOMES[f['rep']]})" for k, f in e["faccoes"].items()))
     if e["relogios"]:
         say("RELÓGIOS:", " | ".join(f"{k}[{a}/{m}]" for k, (a, m) in e["relogios"].items()))
     if e["flags"]:
@@ -568,7 +633,7 @@ CMDS = {
     "ficha": cmd_ficha, "teste": cmd_teste, "t": cmd_teste, "cena": cmd_cena, "fio": cmd_fio,
     "relogio": cmd_relogio, "flag": cmd_flag, "log": cmd_log, "lore": cmd_lore, "combate": cmd_combate,
     "turno": cmd_turno, "oraculo": cmd_oraculo, "ataque": cmd_ataque, "a": cmd_ataque, "boot": cmd_boot, "salvar": cmd_salvar,
-    "carregar": cmd_carregar, "compactar": cmd_compactar,
+    "honra": cmd_honra, "faccao": cmd_faccao, "carregar": cmd_carregar, "compactar": cmd_compactar,
 }
 
 
