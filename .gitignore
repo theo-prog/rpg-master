@@ -1,0 +1,4 @@
+campanha/.saves/
+__pycache__/
+*.tmp
+.claude/settings.local.json
