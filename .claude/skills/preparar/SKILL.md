@@ -19,4 +19,4 @@ Escreva em `campanha/prep.md` (substitua o conteúdo; máx. ~400 palavras, teleg
 9. **Respiros** (1–2 cenas cotidianas para depois da tensão: mercado, refeição, oficina, ritual local) ligados a laços e facções.
 10. **Recompensas** ligadas aos desejos dos PJs.
 
-Depois, numa só chamada, registre o que for canon: `lore + <id> "…"` para NPCs/locais novos, `relogio …`, `faccao …`, `fio + …`. Responda ao jogador só "Prep pronta." (sem spoilers).
+Depois, numa só chamada, registre o que for canon: `lore + <id> "…"` para NPCs/locais novos, `npc <id> att±N`, `relogio …`, `faccao …`, `fio + …`, `rumor 3` (inspire rumores nos segredos), `nome <cultura>` para nomes novos, `provisoes`. Responda ao jogador só "Prep pronta." (sem spoilers).

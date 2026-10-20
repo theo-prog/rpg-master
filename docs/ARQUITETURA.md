@@ -10,6 +10,9 @@
 | **Rolar só quando importa** | Rola para tudo, ou nunca | Passo 2 do loop: incerteza **e** consequência |
 | **Falhar para frente** | Falha = beco sem saída | Passo 3: falha avança com complicação |
 | **Mundo vivo** | Mundo congela fora de cena | Relógios de facção/perigo (estilo *Blades in the Dark*) + `faccao` com reputação -3..+3 e meta própria |
+| **Poder e progressão** | Heróis sem recursos nem evolução; sensação de "plano" | `heroi` (classes), `recurso`, `descanso`, `subir`, condições com efeito automático, manobras de combate |
+| **Sem medo de errar (desfazer)** | Um número errado estraga a sessão | Snapshot antes de cada alteração, `desfazer` até 8 níveis |
+| **Variedade** | Nomes e eventos repetidos (viés do modelo) | Tabelas determinísticas: `nome`, `encontro`, `rumor`, `clima`, `viagem` |
 | **Honra e consequência moral** | Atos sem peso; ética só no discurso | `codigo` na ficha + `honra` (-5..+5) mexida por atos que custam caro; o mundo reage por vantagem/desvantagem e boatos |
 | **Épico com respiro** | Tom monocórdio: tudo é clímax ou tudo é burocracia | Alvos de palavras por escala + regra do respiro cotidiano (~1 a cada 2–3 cenas de tensão) |
 | **NPCs memoráveis** | NPCs genéricos e iguais | Fórmula desejo + tique + voz, guardada em 1 linha de lore |
@@ -85,6 +88,10 @@ Em vez de deliberação aberta, o núcleo impõe um checklist curto — Intenç�
 | **Custo aproximado** | **~$0,05–0,10** | **~$0,02–0,04** |
 
 São estimativas para orientar; meça na sua mesa (`/cost` no Claude Code) e ajuste os tetos de palavras e o `effort`.
+
+### 3.6b Orçamento de contexto (janela de ~150k no Opus 5.5)
+- `autoCompactWindow: 100000` deixa folga para a base fixa (núcleo, skills, ferramentas). O boot tem tetos (resumo 3000 caracteres preservando o cabeçalho, ≤8 fios, ≤6 facções, ≤30 ids de lore) e não cresce com a campanha.
+- O hook `UserPromptSubmit` (`rpg.py ctx`) estima o contexto pelo tamanho do transcript e, acima de `RPG_CTX_AVISO` (padrão 90k tokens, ajustável), pede ao Mestre que sugira `/salvar` + `/clear` no próximo respiro. É uma **estimativa**: o transcript conta o JSONL inteiro, então pode avisar cedo; ignore se o `/context` mostrar folga.
 
 ### 3.7 Botões de ajuste
 - Cena épica pedindo mais? `/effort medium` momentaneamente, depois volte para `low`.

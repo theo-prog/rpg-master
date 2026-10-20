@@ -4,15 +4,15 @@ description: Cria, mostra ou sobe de nível uma ficha de personagem do RPG. Use 
 ---
 # Fichas
 
-**Criar** (uma pergunta por vez só se faltar informação; aceite "você escolhe"):
-1. Conceito, raça, classe. 2. `rpg.py atributos` (ou array padrão 15,14,13,12,10,8) — o jogador distribui.
-3. Calcule com a regra d20 leve: PV = dado de vida máx. + mod CON; CA = 10 + DES (ou armadura); `atk` = proficiência(+2) + mod do atributo da arma; `dano` = dado da arma + mod; 2–4 perícias; 2 resistências da classe.
-4. Uma chamada: `rpg.py pj novo <Nome> raca=… classe=… FOR=… DES=… CON=… INT=… SAB=… CAR=… hp=… ca=… atk=… dano=… pericias=a,b resist=X,Y itens=a,b po=… tracos="…" notas="laço/medo/segredo"`.
-5. **Código de honra** (1 frase que o PJ nunca quebra ou jura cumprir; ex.: "nunca fere desarmados", "paga toda dívida") → grave `codigo="…"` na ficha; honra começa em 0.
-6. Pergunte UM laço com o mundo (pessoa, dívida, segredo ou facção a que deve algo) e transforme em fio, lore ou `faccao "Nome" rep±N "meta"`.
+**Criar — caminho rápido (padrão)**: `rpg.py heroi` lista as classes (guerreiro, ladino, mago, clérigo, patrulheiro, bardo, paladino, bárbaro). Ofereça 3–4 conceitos prontos ("quem você quer ser?"), pergunte nome, raça (só texto) e **código de honra**, e crie numa chamada:
+`rpg.py heroi <Nome> <classe> raca=… codigo="…" notas="laço/medo/segredo"` — o motor distribui o array padrão, calcula PV, CA, ataque, dano, perícias, recursos e traços. Se o jogador quiser outro atributo mais alto, `rpg.py pj <id> FOR=… DES=…` (recalcule PV/CA/atk com o motor se mudar CON/DES).
+
+**Criar — manual (classe fora da lista)**: `rpg.py atributos` ou array 15,14,13,12,10,8; PV = dado de vida máx. + mod CON; CA = 10 + DES (ou armadura); `atk` = prof(+2) + mod; `dano` = dado + mod. Uma chamada: `rpg.py pj novo <Nome> raca=… classe=… FOR=… hp=… ca=… atk=… dano=… pericias=a,b resist=X,Y itens=a,b tracos="…" codigo="…" notas="…"`; recursos com `recurso <id> slots max=2 l`.
+
+**Sempre depois**: pergunte UM laço com o mundo (pessoa, dívida, segredo ou facção) e transforme em `npc`, `faccao`, `fio` ou `lore +`.
 
 **Honra**: `rpg.py honra <id> ±N "motivo"` (-5..+5). Em nível novo, pergunte se o código do PJ mudou.
 
 **Mostrar**: `rpg.py ficha <id>` e repasse a saída sem enfeitar.
 
-**Subir de nível**: `rpg.py pj <id> nivel+1 hpmax+<dado médio+CON> hp=<novo max>` + novo traço/magia em `tracos`/`magias`. Proficiência é recalculada pelo motor.
+**Subir de nível**: quando `pj xp+N` avisar "pode subir", rode `rpg.py subir <id>` (PV, proficiência e +1 slot automáticos) e peça um novo traço/magia → `pj <id> tracos=…`. **Descanso**: `rpg.py descanso curto|longo`. **Usos limitados**: `recurso <id> nome -1`.
